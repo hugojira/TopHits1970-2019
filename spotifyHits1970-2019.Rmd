@@ -3,20 +3,29 @@ title: "Spotify Top Hits from 1970 to 2019"
 output: github_document
 ---
 
-## Packages
+## Overview
+The following code is for downloading **audio features** of Spotify's "Top Hits of" playlists, specifically from the years 1970 to 2019. For example the playlist's title for the year 1990 it would be "Top Hits of 1990".
 
+It uses the wrapper library [Spotifyr](https://www.rcharlie.com/spotifyr/) to make http requests to the Spotify Web API.
+
+### Code
+The file ```test.R``` is an R script for downloading just one playlist, in order to have an idea of the data shape.
+
+The Rmarkdown file ```spotifyHits1970-2019.Rmd``` contains the neccesary code for getting the **audio features** of the Top Hits playlists from 1970-2019. Then it exports the data to the file ```Spotify_TopHits_of_1970_2019.csv```.
+
+## Packages
+This packages are required to run the code
 ```{r, message=FALSE}
 library(spotifyr)
 library(dplyr)
 library(readr)
-library(gt)
 library(DataExplorer)
 ```
 
 ## Downloading the data
 
 ### Authentication
-We use the ```get_spotify_access_token()``` function to get the **Access Token** with the Spotify Client ID and the Spotify Client Secret.
+The Spotifyr's function ```get_spotify_access_token()``` gets the **Access Token** with the Spotify Client ID and the Spotify Client Secret.
 
 ```{r}
 access.token <- get_spotify_access_token(
@@ -56,7 +65,7 @@ search.response.ID <- lapply(1:length(search.response), function(i){
    # making sure it's the playlist created by Spotify
    aux.playlist.info <- aux.playlist.info %>% 
      filter(name == playlists.names[i] & owner.display_name == "Spotify")
-   # get the actual playlist id from the i-th tibble 
+   # get the actual playlist id from the 4th element of the i-th tibble 
    aux.playlist.info[[4]]
 }
 )
@@ -101,8 +110,9 @@ The numbers of songs in each playlist
 ```{r}
 # group by playlist and count
 playlists.counts <-  playlists.features %>% group_by(playlist_name) %>% summarise(n = n())
-gt(playlists.counts)
+print(playlists.counts, n = nrow(playlists.counts))
 ```
+### Removing NA row
 We can see that there's one missing value in the ```playlist_name``` column. Let's locate it.
 
 ```{r}
@@ -115,7 +125,7 @@ The missing row belongs to the 1997 playlist, but since all the audio features a
 
 ```{r}
 playlists.features <- playlists.features[-index.na,]
-paste("rows:",nrow(playlists.features))
+paste("Number of rows left:",nrow(playlists.features))
 paste("missing values in playlist_name column:" , 
       sum(is.na(playlists.features$playlist_name)))
 ```
@@ -126,6 +136,13 @@ Making a backup for the tibble in an ```.rda```file, which can be later imported
 
 ```{r}
 saveRDS(playlists.features, "playlist_features.rds")
+
+rds.output <- "playlist_features.rds"
+if (file.exists(rds.output)) {
+   print(paste("The file already exists:", rds.output))
+} else {
+   saveRDS(playlists.features, file = rds.output)
+}
 ```
 
 ### Columns
@@ -197,7 +214,6 @@ if (file.exists(file.output)) {
 } else {
    write_csv(topHits1970_2019, file = file.output)
 }
-#write_csv(topHits1970_2019, "Spotify_TopHits_of_1970_2019.csv")
 ```
 
 So, the file saved has the columns

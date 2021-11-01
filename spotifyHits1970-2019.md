@@ -1,13 +1,35 @@
 Spotify Top Hits from 1970 to 2019
 ================
 
+## Overview
+
+The following code is for downloading **audio features** of Spotify’s
+“Top Hits of” playlists, specifically from the years 1970 to 2019. For
+example the playlist’s title for the year 1990 it would be “Top Hits of
+1990”.
+
+It uses the wrapper library
+[Spotifyr](https://www.rcharlie.com/spotifyr/) to make http requests to
+the Spotify Web API.
+
+### Code
+
+The file `test.R` is an R script for downloading just one playlist, in
+order to have an idea of the data shape.
+
+The Rmarkdown file `spotifyHits1970-2019.Rmd` contains the neccesary
+code for getting the **audio features** of the Top Hits playlists from
+1970-2019. Then it exports the data to the file
+`Spotify_TopHits_of_1970_2019.csv`.
+
 ## Packages
+
+This packages are required to run the code
 
 ``` r
 library(spotifyr)
 library(dplyr)
 library(readr)
-library(gt)
 library(DataExplorer)
 ```
 
@@ -15,7 +37,7 @@ library(DataExplorer)
 
 ### Authentication
 
-We use the `get_spotify_access_token()` function to get the **Access
+The Spotifyr’s function `get_spotify_access_token()` gets the **Access
 Token** with the Spotify Client ID and the Spotify Client Secret.
 
 ``` r
@@ -60,7 +82,7 @@ search.response.ID <- lapply(1:length(search.response), function(i){
    # making sure it's the playlist created by Spotify
    aux.playlist.info <- aux.playlist.info %>% 
      filter(name == playlists.names[i] & owner.display_name == "Spotify")
-   # get the actual playlist id from the i-th tibble 
+   # get the actual playlist id from the 4th element of the i-th tibble 
    aux.playlist.info[[4]]
 }
 )
@@ -112,463 +134,65 @@ The numbers of songs in each playlist
 ``` r
 # group by playlist and count
 playlists.counts <-  playlists.features %>% group_by(playlist_name) %>% summarise(n = n())
-gt(playlists.counts)
+print(playlists.counts, n = nrow(playlists.counts))
 ```
 
-<div id="tdgpyygdmk" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
-}
+    ## # A tibble: 51 × 2
+    ##    playlist_name        n
+    ##    <chr>            <int>
+    ##  1 Top Hits of 1970   100
+    ##  2 Top Hits of 1971   100
+    ##  3 Top Hits of 1972   100
+    ##  4 Top Hits of 1973   100
+    ##  5 Top Hits of 1974   100
+    ##  6 Top Hits of 1975   100
+    ##  7 Top Hits of 1976   100
+    ##  8 Top Hits of 1977   100
+    ##  9 Top Hits of 1978   100
+    ## 10 Top Hits of 1979   100
+    ## 11 Top Hits of 1980   100
+    ## 12 Top Hits of 1981   100
+    ## 13 Top Hits of 1982   100
+    ## 14 Top Hits of 1983   100
+    ## 15 Top Hits of 1984   100
+    ## 16 Top Hits of 1985   100
+    ## 17 Top Hits of 1986   100
+    ## 18 Top Hits of 1987   100
+    ## 19 Top Hits of 1988   100
+    ## 20 Top Hits of 1989   100
+    ## 21 Top Hits of 1990   100
+    ## 22 Top Hits of 1991   100
+    ## 23 Top Hits of 1992   100
+    ## 24 Top Hits of 1993   100
+    ## 25 Top Hits of 1994   100
+    ## 26 Top Hits of 1995   100
+    ## 27 Top Hits of 1996   100
+    ## 28 Top Hits of 1997    99
+    ## 29 Top Hits of 1998   100
+    ## 30 Top Hits of 1999   100
+    ## 31 Top Hits of 2000   100
+    ## 32 Top Hits of 2001   100
+    ## 33 Top Hits of 2002   100
+    ## 34 Top Hits of 2003   100
+    ## 35 Top Hits of 2004   100
+    ## 36 Top Hits of 2005   100
+    ## 37 Top Hits of 2006   100
+    ## 38 Top Hits of 2007   100
+    ## 39 Top Hits of 2008   100
+    ## 40 Top Hits of 2009   100
+    ## 41 Top Hits of 2010   100
+    ## 42 Top Hits of 2011   100
+    ## 43 Top Hits of 2012   100
+    ## 44 Top Hits of 2013   100
+    ## 45 Top Hits of 2014   100
+    ## 46 Top Hits of 2015   100
+    ## 47 Top Hits of 2016   130
+    ## 48 Top Hits of 2017   100
+    ## 49 Top Hits of 2018   100
+    ## 50 Top Hits of 2019   100
+    ## 51 <NA>                 1
 
-#tdgpyygdmk .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#tdgpyygdmk .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#tdgpyygdmk .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#tdgpyygdmk .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 6px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#tdgpyygdmk .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#tdgpyygdmk .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#tdgpyygdmk .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#tdgpyygdmk .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#tdgpyygdmk .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#tdgpyygdmk .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#tdgpyygdmk .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#tdgpyygdmk .gt_group_heading {
-  padding: 8px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#tdgpyygdmk .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#tdgpyygdmk .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#tdgpyygdmk .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#tdgpyygdmk .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#tdgpyygdmk .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 12px;
-}
-
-#tdgpyygdmk .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#tdgpyygdmk .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-}
-
-#tdgpyygdmk .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#tdgpyygdmk .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#tdgpyygdmk .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#tdgpyygdmk .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#tdgpyygdmk .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#tdgpyygdmk .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding: 4px;
-}
-
-#tdgpyygdmk .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#tdgpyygdmk .gt_sourcenote {
-  font-size: 90%;
-  padding: 4px;
-}
-
-#tdgpyygdmk .gt_left {
-  text-align: left;
-}
-
-#tdgpyygdmk .gt_center {
-  text-align: center;
-}
-
-#tdgpyygdmk .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#tdgpyygdmk .gt_font_normal {
-  font-weight: normal;
-}
-
-#tdgpyygdmk .gt_font_bold {
-  font-weight: bold;
-}
-
-#tdgpyygdmk .gt_font_italic {
-  font-style: italic;
-}
-
-#tdgpyygdmk .gt_super {
-  font-size: 65%;
-}
-
-#tdgpyygdmk .gt_footnote_marks {
-  font-style: italic;
-  font-weight: normal;
-  font-size: 65%;
-}
-</style>
-<table class="gt_table">
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">playlist_name</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">n</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td class="gt_row gt_left">Top Hits of 1970</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1971</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1972</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1973</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1974</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1975</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1976</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1977</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1978</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1979</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1980</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1981</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1982</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1983</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1984</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1985</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1986</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1987</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1988</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1989</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1990</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1991</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1992</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1993</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1994</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1995</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1996</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1997</td>
-<td class="gt_row gt_right">99</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1998</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 1999</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2000</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2001</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2002</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2003</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2004</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2005</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2006</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2007</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2008</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2009</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2010</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2011</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2012</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2013</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2014</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2015</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2016</td>
-<td class="gt_row gt_right">130</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2017</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2018</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">Top Hits of 2019</td>
-<td class="gt_row gt_right">100</td></tr>
-    <tr><td class="gt_row gt_left">NA</td>
-<td class="gt_row gt_right">1</td></tr>
-  </tbody>
-  
-  
-</table>
-</div>
+### Removing NA row
 
 We can see that there’s one missing value in the `playlist_name` column.
 Let’s locate it.
@@ -578,7 +202,7 @@ index.na <- which(is.na(playlists.features$playlist_name))
 print(paste("The row of the missing playlist:",index.na))
 ```
 
-    ## [1] "The row of the missing playlist: 2780"
+    ## [1] "The row of the missing playlist: 2757"
 
 ``` r
 print(playlists.features[(index.na-2):(index.na+2), c(2,6:16)])
@@ -587,11 +211,11 @@ print(playlists.features[(index.na-2):(index.na+2), c(2,6:16)])
     ## # A tibble: 5 × 12
     ##   playlist_name    danceability energy   key loudness  mode speechiness
     ##   <chr>                   <dbl>  <dbl> <int>    <dbl> <int>       <dbl>
-    ## 1 Top Hits of 1997        0.674  0.789     8    -6.90     1      0.0676
-    ## 2 Top Hits of 1997        0.789  0.412     7    -7.52     1      0.243 
+    ## 1 Top Hits of 1997        0.571  0.505     1    -9.31     0      0.0238
+    ## 2 Top Hits of 1997        0.745  0.972     6    -5.60     1      0.0316
     ## 3 <NA>                   NA     NA        NA    NA       NA     NA     
-    ## 4 Top Hits of 1997        0.225  0.875    11    -3.28     0      0.0458
-    ## 5 Top Hits of 1997        0.663  0.925     9    -6.78     1      0.0449
+    ## 4 Top Hits of 1997        0.581  0.825     4    -9.69     0      0.0373
+    ## 5 Top Hits of 1997        0.845  0.884     6    -4.51     0      0.0759
     ## # … with 5 more variables: acousticness <dbl>, instrumentalness <dbl>,
     ## #   liveness <dbl>, valence <dbl>, tempo <dbl>
 
@@ -600,10 +224,10 @@ features are missing let’s remove it.
 
 ``` r
 playlists.features <- playlists.features[-index.na,]
-paste("rows:",nrow(playlists.features))
+paste("Number of rows left:",nrow(playlists.features))
 ```
 
-    ## [1] "rows: 5029"
+    ## [1] "Number of rows left: 5029"
 
 ``` r
 paste("missing values in playlist_name column:" , 
@@ -621,7 +245,16 @@ imported into an R session with `readRDS()` function.
 
 ``` r
 saveRDS(playlists.features, "playlist_features.rds")
+
+rds.output <- "playlist_features.rds"
+if (file.exists(rds.output)) {
+   print(paste("The file already exists:", rds.output))
+} else {
+   saveRDS(playlists.features, file = rds.output)
+}
 ```
+
+    ## [1] "The file already exists: playlist_features.rds"
 
 ### Columns
 
@@ -680,7 +313,7 @@ glimpse(playlists.features.subset)
     ## $ playlist_owner_id                  <chr> "spotify", "spotify", "spotify", "s…
     ## $ danceability                       <dbl> 0.443, 0.755, 0.474, 0.598, 0.611, …
     ## $ energy                             <dbl> 0.403, 0.876, 0.473, 0.797, 0.470, …
-    ## $ key                                <int> 0, 0, 2, 7, 4, 8, 11, 8, 5, 9, 3, 5…
+    ## $ key                                <int> 0, 0, 2, 7, 4, 8, 11, 8, 5, 5, 1, 3…
     ## $ loudness                           <dbl> -8.339, -8.867, -11.454, -6.793, -9…
     ## $ mode                               <int> 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,…
     ## $ speechiness                        <dbl> 0.0322, 0.0362, 0.0601, 0.0332, 0.0…
@@ -730,9 +363,9 @@ plot_missing(topHits1970_2019)
 ![](spotifyHits1970-2019_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 The result is that only the column `track.preview_url` has missing
-values, the column contains links which open a popup with a 30 min
-preview of the track. This is not a problem since it’s not necessary for
-the audio analysis.
+values, the column contains links which open a popup with a 30 sec
+preview of the track. As long as the audio features have no missing
+values then there’s no problem with this data.
 
 ## Exporting the data to .csv
 
@@ -750,10 +383,6 @@ if (file.exists(file.output)) {
 
     ## [1] "The file already exists: Spotify_TopHits_of_1970_2019.csv"
 
-``` r
-#write_csv(topHits1970_2019, "Spotify_TopHits_of_1970_2019.csv")
-```
-
 So, the file saved has the columns
 
 ``` r
@@ -769,7 +398,7 @@ glimpse(topHits1970_2019)
     ## $ playlist_owner_id                  <chr> "spotify", "spotify", "spotify", "s…
     ## $ danceability                       <dbl> 0.443, 0.755, 0.474, 0.598, 0.611, …
     ## $ energy                             <dbl> 0.403, 0.876, 0.473, 0.797, 0.470, …
-    ## $ key                                <int> 0, 0, 2, 7, 4, 8, 11, 8, 5, 9, 3, 5…
+    ## $ key                                <int> 0, 0, 2, 7, 4, 8, 11, 8, 5, 5, 1, 3…
     ## $ loudness                           <dbl> -8.339, -8.867, -11.454, -6.793, -9…
     ## $ mode                               <int> 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,…
     ## $ speechiness                        <dbl> 0.0322, 0.0362, 0.0601, 0.0332, 0.0…
