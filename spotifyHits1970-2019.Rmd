@@ -1,0 +1,215 @@
+---
+title: "Spotify Top Hits from 1970 to 2019"
+output: github_document
+---
+
+## Packages
+
+```{r, message=FALSE}
+library(spotifyr)
+library(dplyr)
+library(readr)
+library(gt)
+library(DataExplorer)
+```
+
+## Downloading the data
+
+### Authentication
+We use the ```get_spotify_access_token()``` function to get the **Access Token** with the Spotify Client ID and the Spotify Client Secret.
+
+```{r}
+access.token <- get_spotify_access_token(
+  client_id = Sys.getenv("SPOTIFY_CLIENT_ID"), 
+  client_secret = Sys.getenv("SPOTIFY_CLIENT_SECRET")
+)
+```
+
+
+### Playlists IDs
+The playlists' names are like "Top Hits of YYYY", where YYYY refer to the year. For example for the year 2000 it would be "Top Hits of 2000". 
+
+The years are in the range [1970, 2019], let's make a vector that stores the names.
+
+```{r}
+playlists.names <- paste("Top","Hits", "of", as.character(1970:2019)) 
+```
+
+In order to get the ID for each playlist, we can use the `search_spotify()` function to retrieve info about the playlists
+
+```{r}
+search.response <- lapply(1:length(playlists.names), function(i) {
+  search_spotify(q = playlists.names[i], type = "playlist", 
+                 authorization = access.token, 
+                 limit = 1)
+}
+)
+```
+
+Let's extract the IDs from the list response and then verify that the playlists are the ones created by Spotify
+
+```{r}
+# get the IDs for the elements in the list using lapply
+search.response.ID <- lapply(1:length(search.response), function(i){
+   # the i-th playlist tibble in the list
+   aux.playlist.info <- search.response[[i]]
+   # making sure it's the playlist created by Spotify
+   aux.playlist.info <- aux.playlist.info %>% 
+     filter(name == playlists.names[i] & owner.display_name == "Spotify")
+   # get the actual playlist id from the i-th tibble 
+   aux.playlist.info[[4]]
+}
+)
+
+# convert the IDs to character
+playlists.IDs <- as.character(unlist(search.response.ID))
+head(playlists.IDs, 10)
+```
+
+### Getting the playlists' audio features using their Spotify IDs
+Now, let's use ```lapply()``` again to get the audio features tibbles in a list
+
+```{r}
+features.response <- lapply(1:length(playlists.IDs), function(i) {
+  get_playlist_audio_features("Spotify", playlists.IDs[i], 
+                 authorization = access.token
+                 )
+}
+)
+```
+
+
+
+
+
+Concatenating the tibbles with ```bind_rows```
+```{r}
+playlists.features <- bind_rows(features.response)
+```
+
+## Verifying the downloaded data
+
+### Counting
+The total instances in the dataset
+
+```{r}
+nrow(playlists.features)
+```
+
+The numbers of songs in each playlist
+
+```{r}
+# group by playlist and count
+playlists.counts <-  playlists.features %>% group_by(playlist_name) %>% summarise(n = n())
+gt(playlists.counts)
+```
+We can see that there's one missing value in the ```playlist_name``` column. Let's locate it.
+
+```{r}
+index.na <- which(is.na(playlists.features$playlist_name))
+print(paste("The row of the missing playlist:",index.na))
+print(playlists.features[(index.na-2):(index.na+2), c(2,6:16)])
+```
+
+The missing row belongs to the 1997 playlist, but since all the audio features are missing let's remove it.
+
+```{r}
+playlists.features <- playlists.features[-index.na,]
+paste("rows:",nrow(playlists.features))
+paste("missing values in playlist_name column:" , 
+      sum(is.na(playlists.features$playlist_name)))
+```
+## Selecting the audio features columns in the data
+
+### Backup
+Making a backup for the tibble in an ```.rda```file, which can be later imported into an R session with ```readRDS()``` function.
+
+```{r}
+saveRDS(playlists.features, "playlist_features.rds")
+```
+
+### Columns
+
+Now, there may be more missing values in other columns, but before checking that, let's select the columns that contain the audio features fisrt.
+
+It's important to mention that not all the columns are for audio features, some are for IDs or metadata like links to the playlist's cover images that could be useful for a dashboard. 
+
+The columns that will be extracted are
+
+```{r}
+columns.features <- c("playlist_id", "playlist_name", "playlist_img", 
+                      "playlist_owner_name", "playlist_owner_id",
+                      "danceability", "energy", "key", "loudness", 
+                      "mode", "speechiness", "acousticness", "instrumentalness", 
+                      "liveness", "valence", "tempo", "track.id",
+                      "time_signature", "added_at", "track.artists", 
+                      "track.disc_number", "track.duration_ms", "track.explicit",
+                      "track.name", "track.popularity",
+                      "track.preview_url", "track.type",
+                      "track.album.release_date", 
+                      "track.album.release_date_precision",
+                      "track.album.total_tracks",
+                      "track.album.type", "track.album.uri"
+                      )
+```
+
+Selecting the 32 columns listed above and storing the resulting tibble in ```topHits1970_2019```
+
+```{r}
+playlists.features.subset <- playlists.features[ ,columns.features]
+dim(playlists.features.subset)
+```
+### Creating a column for the artists' names
+Now, using ```glimpse()``` to see the data types in the ```playlists.features.subset``` tibble 
+
+```{r}
+glimpse(playlists.features.subset)
+```
+
+The ```track.artists``` column is a list of dataframes, where the artists' names are other information are stored. Let's extract those names and add them to a new column for simplicity in later analysis.
+
+```{r}
+topHits1970_2019 <- playlists.features.subset %>% 
+   mutate(artists.name = lapply(1:nrow(playlists.features.subset), function(i){
+      playlists.features.subset$track.artists[[i]][[3]]
+   })
+   ) %>% 
+   mutate(artists.name = as.character(artists.name))
+```
+
+### Missing values
+Let's look for missing values one last time before exporting the tibble.
+
+```{r}
+plot_missing(topHits1970_2019)
+```
+
+The result is that only the column ```track.preview_url``` has missing values, the column contains links which open a popup with a 30 sec preview of the track. As long as the audio features have no missing values then there's no problem with this data.
+
+## Exporting the data to .csv
+Finally, let's save the data in a ```.csv``` file.
+
+```{r}
+file.output <- "Spotify_TopHits_of_1970_2019.csv"
+
+if (file.exists(file.output)) {
+   print(paste("The file already exists:", file.output))
+} else {
+   write_csv(topHits1970_2019, file = file.output)
+}
+#write_csv(topHits1970_2019, "Spotify_TopHits_of_1970_2019.csv")
+```
+
+So, the file saved has the columns
+
+```{r}
+glimpse(topHits1970_2019)
+```
+
+
+**Note:** The column ```artists.name``` contains strings like ```c("artist 1", "artist 2", "artist 3")``` when there are multiple artists. When there's only one artist it's just a string like ```artist 1```.
+
+
+
+
+
