@@ -11,7 +11,14 @@ It uses the wrapper library [Spotifyr](https://www.rcharlie.com/spotifyr/) to ma
 ### Code
 The file ```test.R``` is an R script for downloading just one playlist, in order to have an idea of the data shape.
 
-The Rmarkdown file ```spotifyHits1970-2019.Rmd``` contains the neccesary code for getting the **audio features** of the Top Hits playlists from 1970-2019. Then it exports the data to the file ```Spotify_TopHits_of_1970_2019.csv```.
+The Rmarkdown file ```spotifyHits1970-2019.Rmd``` contains the necessary code for getting the **audio features** of the Top Hits playlists from 1970-2019. Then it exports the data to the file ```Spotify_TopHits_of_1970_2019.csv```.
+
+### Data
+The folder ```data``` contains the following data:
+
+- ```Spotify_TopHits_of_1970_2019.csv``` : audio features for the playlists Top Hits of, from 1970 to 2019, retrieved from Spotify Web API.
+- ```test_hits_1970.csv``` : audio features for the playlist Tip Hits of 1970, it's the file used for exploring the data provided by the Spotify API.
+- ```playlist_features.rds``` : An RDS object for storing all the columns given by the Spotify Web API response, when making the requests for the playlists of 1970-2019.
 
 ## Packages
 This packages are required to run the code
@@ -135,9 +142,8 @@ paste("missing values in playlist_name column:" ,
 Making a backup for the tibble in an ```.rda```file, which can be later imported into an R session with ```readRDS()``` function.
 
 ```{r}
-saveRDS(playlists.features, "playlist_features.rds")
+rds.output <- "./data/playlist_features.rds"
 
-rds.output <- "playlist_features.rds"
 if (file.exists(rds.output)) {
    print(paste("The file already exists:", rds.output))
 } else {
@@ -207,7 +213,7 @@ The result is that only the column ```track.preview_url``` has missing values, t
 Finally, let's save the data in a ```.csv``` file.
 
 ```{r}
-file.output <- "Spotify_TopHits_of_1970_2019.csv"
+file.output <- "./data/Spotify_TopHits_of_1970_2019.csv"
 
 if (file.exists(file.output)) {
    print(paste("The file already exists:", file.output))

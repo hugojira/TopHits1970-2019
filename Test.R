@@ -7,6 +7,7 @@
 # libraries
 library(spotifyr)
 library(dplyr)
+library(readr)
 
 # Get the Access Token
 access.token <- get_spotify_access_token(
@@ -24,7 +25,7 @@ hits.1970 <- get_playlist_audio_features(
 )
 
 # write the tibble in a csv
-write_csv(hits.1970, "test_hits_1970.csv")
+write_csv(hits.1970, "./data/test_hits_1970.csv")
 
 # ******** Getting the playlist's ID with a search query ******** 
 # in order to have reproducibility, the ID must be obtained with code, in this 

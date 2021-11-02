@@ -17,10 +17,24 @@ the Spotify Web API.
 The file `test.R` is an R script for downloading just one playlist, in
 order to have an idea of the data shape.
 
-The Rmarkdown file `spotifyHits1970-2019.Rmd` contains the neccesary
+The Rmarkdown file `spotifyHits1970-2019.Rmd` contains the necessary
 code for getting the **audio features** of the Top Hits playlists from
 1970-2019. Then it exports the data to the file
 `Spotify_TopHits_of_1970_2019.csv`.
+
+### Data
+
+The folder `data` contains the following data:
+
+-   `Spotify_TopHits_of_1970_2019.csv` : audio features for the
+    playlists Top Hits of, from 1970 to 2019, retrieved from Spotify Web
+    API.
+-   `test_hits_1970.csv` : audio features for the playlist Tip Hits of
+    1970, it’s the file used for exploring the data provided by the
+    Spotify API.
+-   `playlist_features.rds` : An RDS object for storing all the columns
+    given by the Spotify Web API response, when making the requests for
+    the playlists of 1970-2019.
 
 ## Packages
 
@@ -202,7 +216,7 @@ index.na <- which(is.na(playlists.features$playlist_name))
 print(paste("The row of the missing playlist:",index.na))
 ```
 
-    ## [1] "The row of the missing playlist: 2757"
+    ## [1] "The row of the missing playlist: 2762"
 
 ``` r
 print(playlists.features[(index.na-2):(index.na+2), c(2,6:16)])
@@ -211,11 +225,11 @@ print(playlists.features[(index.na-2):(index.na+2), c(2,6:16)])
     ## # A tibble: 5 × 12
     ##   playlist_name    danceability energy   key loudness  mode speechiness
     ##   <chr>                   <dbl>  <dbl> <int>    <dbl> <int>       <dbl>
-    ## 1 Top Hits of 1997        0.571  0.505     1    -9.31     0      0.0238
-    ## 2 Top Hits of 1997        0.745  0.972     6    -5.60     1      0.0316
+    ## 1 Top Hits of 1997        0.662  0.878     1    -6.51     0      0.101 
+    ## 2 Top Hits of 1997        0.636  0.555     4    -8.12     0      0.0264
     ## 3 <NA>                   NA     NA        NA    NA       NA     NA     
-    ## 4 Top Hits of 1997        0.581  0.825     4    -9.69     0      0.0373
-    ## 5 Top Hits of 1997        0.845  0.884     6    -4.51     0      0.0759
+    ## 4 Top Hits of 1997        0.698  0.985     7    -4.92     0      0.0426
+    ## 5 Top Hits of 1997        0.745  0.972     6    -5.60     1      0.0316
     ## # … with 5 more variables: acousticness <dbl>, instrumentalness <dbl>,
     ## #   liveness <dbl>, valence <dbl>, tempo <dbl>
 
@@ -244,9 +258,8 @@ Making a backup for the tibble in an `.rda`file, which can be later
 imported into an R session with `readRDS()` function.
 
 ``` r
-saveRDS(playlists.features, "playlist_features.rds")
+rds.output <- "./data/playlist_features.rds"
 
-rds.output <- "playlist_features.rds"
 if (file.exists(rds.output)) {
    print(paste("The file already exists:", rds.output))
 } else {
@@ -254,7 +267,7 @@ if (file.exists(rds.output)) {
 }
 ```
 
-    ## [1] "The file already exists: playlist_features.rds"
+    ## [1] "The file already exists: ./data/playlist_features.rds"
 
 ### Columns
 
@@ -313,7 +326,7 @@ glimpse(playlists.features.subset)
     ## $ playlist_owner_id                  <chr> "spotify", "spotify", "spotify", "s…
     ## $ danceability                       <dbl> 0.443, 0.755, 0.474, 0.598, 0.611, …
     ## $ energy                             <dbl> 0.403, 0.876, 0.473, 0.797, 0.470, …
-    ## $ key                                <int> 0, 0, 2, 7, 4, 8, 11, 8, 5, 5, 1, 3…
+    ## $ key                                <int> 0, 0, 2, 7, 4, 8, 11, 8, 5, 5, 1, 8…
     ## $ loudness                           <dbl> -8.339, -8.867, -11.454, -6.793, -9…
     ## $ mode                               <int> 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,…
     ## $ speechiness                        <dbl> 0.0322, 0.0362, 0.0601, 0.0332, 0.0…
@@ -330,7 +343,7 @@ glimpse(playlists.features.subset)
     ## $ track.duration_ms                  <int> 243026, 174826, 199266, 147493, 134…
     ## $ track.explicit                     <lgl> FALSE, FALSE, FALSE, FALSE, FALSE, …
     ## $ track.name                         <chr> "Let It Be - Remastered 2009", "Cec…
-    ## $ track.popularity                   <int> 78, 74, 37, 70, 70, 77, 47, 67, 76,…
+    ## $ track.popularity                   <int> 78, 74, 36, 70, 70, 77, 46, 67, 76,…
     ## $ track.preview_url                  <chr> NA, "https://p.scdn.co/mp3-preview/…
     ## $ track.type                         <chr> "track", "track", "track", "track",…
     ## $ track.album.release_date           <chr> "1970-05-08", "1970-01-26", "2014-0…
@@ -372,7 +385,7 @@ values then there’s no problem with this data.
 Finally, let’s save the data in a `.csv` file.
 
 ``` r
-file.output <- "Spotify_TopHits_of_1970_2019.csv"
+file.output <- "./data/Spotify_TopHits_of_1970_2019.csv"
 
 if (file.exists(file.output)) {
    print(paste("The file already exists:", file.output))
@@ -381,7 +394,7 @@ if (file.exists(file.output)) {
 }
 ```
 
-    ## [1] "The file already exists: Spotify_TopHits_of_1970_2019.csv"
+    ## [1] "The file already exists: ./data/Spotify_TopHits_of_1970_2019.csv"
 
 So, the file saved has the columns
 
@@ -398,7 +411,7 @@ glimpse(topHits1970_2019)
     ## $ playlist_owner_id                  <chr> "spotify", "spotify", "spotify", "s…
     ## $ danceability                       <dbl> 0.443, 0.755, 0.474, 0.598, 0.611, …
     ## $ energy                             <dbl> 0.403, 0.876, 0.473, 0.797, 0.470, …
-    ## $ key                                <int> 0, 0, 2, 7, 4, 8, 11, 8, 5, 5, 1, 3…
+    ## $ key                                <int> 0, 0, 2, 7, 4, 8, 11, 8, 5, 5, 1, 8…
     ## $ loudness                           <dbl> -8.339, -8.867, -11.454, -6.793, -9…
     ## $ mode                               <int> 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,…
     ## $ speechiness                        <dbl> 0.0322, 0.0362, 0.0601, 0.0332, 0.0…
@@ -415,7 +428,7 @@ glimpse(topHits1970_2019)
     ## $ track.duration_ms                  <int> 243026, 174826, 199266, 147493, 134…
     ## $ track.explicit                     <lgl> FALSE, FALSE, FALSE, FALSE, FALSE, …
     ## $ track.name                         <chr> "Let It Be - Remastered 2009", "Cec…
-    ## $ track.popularity                   <int> 78, 74, 37, 70, 70, 77, 47, 67, 76,…
+    ## $ track.popularity                   <int> 78, 74, 36, 70, 70, 77, 46, 67, 76,…
     ## $ track.preview_url                  <chr> NA, "https://p.scdn.co/mp3-preview/…
     ## $ track.type                         <chr> "track", "track", "track", "track",…
     ## $ track.album.release_date           <chr> "1970-05-08", "1970-01-26", "2014-0…
